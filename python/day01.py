@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import List
 
-INPUT_FILE = Path(__file__).parent.parent / "inputs" / "day01.txt"
+INPUT_FILE = Path(__file__).parent.parent / "_inputs" / "day01.txt"
 
 
 def transform_input(input: str) -> List[int]:

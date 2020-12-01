@@ -10,7 +10,7 @@ type Complements = Set Int
 
 main :: IO ()
 main = do
-  input <- IO.readFile "inputs/day01.txt"
+  input <- IO.readFile "_inputs/day01.txt"
   let numbers = [read word | word <- lines input]
       complements = Set.fromList . map (2020 -) $ numbers
 

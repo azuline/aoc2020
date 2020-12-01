@@ -10,27 +10,34 @@ fn main() {
     println!("Part 2: {}", part2(&numbers));
 }
 
-fn transform_input(input: &str) -> Vec<u32> {
+fn transform_input(input: &str) -> Vec<i32> {
     input.split("\n").filter_map(|x| x.parse().ok()).collect()
 }
 
-fn part1(numbers: &Vec<u32>) -> u32 {
-    let complements: HashSet<u32> = numbers.iter().map(|x| 2020 - x).collect();
-    let found = numbers.iter().find(|x| complements.contains(x)).unwrap();
-    found * (2020 - found)
+fn part1(numbers: &Vec<i32>) -> i32 {
+    let mut complements: HashSet<i32> = HashSet::new();
+
+    for x in numbers.iter() {
+        if complements.contains(x) {
+            return x * (2020 - x);
+        }
+
+        complements.insert(2020 - x);
+    }
+
+    panic!("No pair found.")
 }
 
-fn part2(numbers: &Vec<u32>) -> u32 {
-    let complements: HashSet<u32> = numbers.iter().map(|x| 2020 - x).collect();
+fn part2(numbers: &Vec<i32>) -> i32 {
+    let mut complements: HashSet<i32> = HashSet::new();
 
-    let (x, y) = numbers
-        .into_iter()
-        .tuple_combinations()
-        .find(|&tuple| {
-            let (x, y) = tuple;
-            complements.contains(&(x + y))
-        })
-        .unwrap();
+    for (x, y) in numbers.iter().tuple_combinations() {
+        if complements.contains(&(x + y)) {
+            return x * y * (2020 - x - y);
+        }
 
-    x * y * (2020 - x - y)
+        complements.insert(2020 - x - y);
+    }
+
+    panic!("No triplet found.");
 }

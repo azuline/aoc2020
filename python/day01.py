@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from pathlib import Path
+from itertools import combinations
 from typing import List
 
 INPUT_FILE = Path(__file__).parent.parent / "_inputs" / "day01.txt"
@@ -11,22 +12,25 @@ def transform_input(input: str) -> List[int]:
 
 
 def part1(numbers: List[int]) -> int:
-    complements = {2020 - x for x in numbers}
+    complements = set()
 
     for x in numbers:
         if x in complements:
             return x * (2020 - x)
 
+        complements.add(2020 - x)
+
     raise Exception("No pair found.")
 
 
 def part2(numbers: List[int]) -> int:
-    complements = {2020 - x for x in numbers}
+    complements = set()
 
-    for i, x in enumerate(numbers):
-        for y in numbers[i:]:
-            if x + y in complements:
-                return x * y * (2020 - x - y)
+    for x, y in combinations(numbers, 2):
+        if x + y in complements:
+            return x * y * (2020 - x - y)
+
+        complements.add(2020 - x - y)
 
     raise Exception("No triplet found.")
 

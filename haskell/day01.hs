@@ -7,6 +7,7 @@ import qualified System.IO as IO
 type Product = Int
 
 type Complements = Set Int
+type Combinations = [(Int, Int)]
 
 main :: IO ()
 main = do
@@ -14,22 +15,25 @@ main = do
   let numbers = [read word | word <- lines input]
       complements = Set.fromList . map (2020 -) $ numbers
 
-  putStrLn $ "Part 1: " ++ show (part1 numbers complements)
-  putStrLn $ "Part 2: " ++ show (part2 numbers complements)
+  putStrLn $ "Part 1: " ++ show (part1 numbers)
+  putStrLn $ "Part 2: " ++ show (part2 numbers)
 
-part1 :: [Int] -> Complements -> Product
-part1 numbers complements =
-  head [x * (2020 - x) | x <- numbers, x `Set.member` complements]
+part1 :: [Int] -> Product
+part1 numbers = findPair numbers Set.empty
 
-part2 :: [Int] -> Complements -> Product
-part2 numbers complements =
-  head
-    [ x * y * (2020 - x - y)
-      | (x, y) <- combinations,
-        (x + y) `Set.member` complements
-    ]
-  where
-    combinations = generateCombinations numbers
+findPair :: [Int] -> Complements -> Product
+findPair (x:xs) complements
+  | x `Set.member` complements = x * (2020 - x)
+  | otherwise = findPair xs $ Set.insert (2020 - x) complements
 
-generateCombinations :: [Int] -> [(Int, Int)]
+part2 :: [Int] -> Product
+part2 numbers = findTriplet combinations Set.empty
+  where combinations = generateCombinations numbers
+
+findTriplet :: Combinations -> Complements -> Product
+findTriplet ((x, y):xs) complements
+  | (x + y) `Set.member` complements = x * y * (2020 - x - y)
+  | otherwise = findTriplet xs $ Set.insert (2020 - x - y) complements
+
+generateCombinations :: [Int] -> Combinations
 generateCombinations (x : xs) = map (,x) xs ++ generateCombinations xs

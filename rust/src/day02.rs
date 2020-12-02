@@ -7,13 +7,7 @@ lazy_static! {
     static ref POLICY_REGEX: Regex = Regex::new(r"^(\d+)-(\d+) (.): (.+)$").unwrap();
 }
 
-#[derive(Debug)]
-struct Policy<'a> {
-    low: usize,
-    high: usize,
-    char: char,
-    pass: &'a str,
-}
+type Policy<'a> = (usize, usize, char, &'a str);
 
 pub fn run() {
     let policies = transform_input(INPUT);
@@ -26,17 +20,14 @@ fn transform_input(input: &str) -> Vec<Policy> {
     input
         .split("\n")
         .filter_map(|x| {
-            let caps = match POLICY_REGEX.captures(x) {
-                Some(caps) => caps,
-                None => return None,
-            };
+            let caps = POLICY_REGEX.captures(x)?;
 
-            Some(Policy {
-                low: caps.get(1).unwrap().as_str().parse().unwrap(),
-                high: caps.get(2).unwrap().as_str().parse().unwrap(),
-                char: caps.get(3).unwrap().as_str().chars().next().unwrap(),
-                pass: caps.get(4).unwrap().as_str(),
-            })
+            Some((
+                caps.get(1)?.as_str().parse().unwrap(),
+                caps.get(2)?.as_str().parse().unwrap(),
+                caps.get(3)?.as_str().chars().next()?,
+                caps.get(4)?.as_str(),
+            ))
         })
         .collect()
 }
@@ -44,9 +35,9 @@ fn transform_input(input: &str) -> Vec<Policy> {
 fn part1(policies: &Vec<Policy>) -> usize {
     policies
         .iter()
-        .filter(|policy| {
-            let char_count = policy.pass.chars().filter(|&c| c == policy.char).count();
-            char_count >= policy.low && char_count <= policy.high
+        .filter(|&(low, high, pol_char, pass)| {
+            let char_count = pass.chars().filter(|c| c == pol_char).count();
+            &char_count >= low && &char_count <= high
         })
         .count()
 }
@@ -54,12 +45,12 @@ fn part1(policies: &Vec<Policy>) -> usize {
 fn part2(policies: &Vec<Policy>) -> usize {
     policies
         .iter()
-        .filter(|policy| {
-            let bytes = policy.pass.as_bytes();
-            let lower_char = *bytes.get(policy.low - 1).unwrap() as char;
-            let higher_char = *bytes.get(policy.high - 1).unwrap() as char;
+        .filter(|&(low, high, pol_char, pass)| {
+            let mut chars = pass.chars();
+            let lchar = chars.nth(low - 1).unwrap();
+            let hchar = chars.nth(high - low - 1).unwrap();
 
-            (policy.char == lower_char) ^ (policy.char == higher_char)
+            (pol_char == &lchar) ^ (pol_char == &hchar)
         })
         .count()
 }

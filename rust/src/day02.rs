@@ -12,13 +12,12 @@ struct Policy<'a> {
     low: usize,
     high: usize,
     char: char,
-    password: &'a str,
+    pass: &'a str,
 }
 
 pub fn run() {
     let policies = transform_input(INPUT);
 
-    println!("{:#?}", policies);
     println!("Part 1: {}", part1(&policies));
     println!("Part 2: {}", part2(&policies));
 }
@@ -36,7 +35,7 @@ fn transform_input(input: &str) -> Vec<Policy> {
                 low: caps.get(1).unwrap().as_str().parse().unwrap(),
                 high: caps.get(2).unwrap().as_str().parse().unwrap(),
                 char: caps.get(3).unwrap().as_str().chars().next().unwrap(),
-                password: caps.get(4).unwrap().as_str(),
+                pass: caps.get(4).unwrap().as_str(),
             })
         })
         .collect()
@@ -46,11 +45,7 @@ fn part1(policies: &Vec<Policy>) -> usize {
     policies
         .iter()
         .filter(|policy| {
-            let char_count = policy
-                .password
-                .chars()
-                .filter(|&c| c == policy.char)
-                .count();
+            let char_count = policy.pass.chars().filter(|&c| c == policy.char).count();
             char_count >= policy.low && char_count <= policy.high
         })
         .count()
@@ -60,10 +55,11 @@ fn part2(policies: &Vec<Policy>) -> usize {
     policies
         .iter()
         .filter(|policy| {
-            let bytes = policy.password.as_bytes();
+            let bytes = policy.pass.as_bytes();
+            let lower_char = *bytes.get(policy.low - 1).unwrap() as char;
+            let higher_char = *bytes.get(policy.high - 1).unwrap() as char;
 
-            (policy.char == *bytes.get(policy.low - 1).unwrap() as char)
-                ^ (policy.char == *bytes.get(policy.high - 1).unwrap() as char)
+            (policy.char == lower_char) ^ (policy.char == higher_char)
         })
         .count()
 }

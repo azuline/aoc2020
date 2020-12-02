@@ -11,7 +11,7 @@ pub fn run() {
 }
 
 fn transform_input(input: &str) -> Vec<i32> {
-    input.split("\n").filter_map(|x| x.parse().ok()).collect()
+    input.lines().filter_map(|x| x.parse().ok()).collect()
 }
 
 fn part1(numbers: &Vec<i32>) -> i32 {

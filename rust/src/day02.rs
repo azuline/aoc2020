@@ -18,7 +18,7 @@ pub fn run() {
 
 fn transform_input(input: &str) -> Vec<Policy> {
     input
-        .split("\n")
+        .lines()
         .filter_map(|x| {
             let caps = POLICY_REGEX.captures(x)?;
 

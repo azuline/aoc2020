@@ -1,2 +1,5 @@
-/target
+target
 .stack-work
+*.o
+*.hi
+dist-newstyle

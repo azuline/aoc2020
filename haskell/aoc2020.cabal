@@ -1,0 +1,14 @@
+name:                aoc2020
+version:             0.1.0.0
+author:              azuline
+maintainer:          azuline@riseup.net
+copyright:           2020 azuline
+category:            Scripts
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5,
+                       containers

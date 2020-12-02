@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::collections::HashSet;
 
-static INPUT: &str = include_str!("../_inputs/day01.txt");
+static INPUT: &str = include_str!("../../inputs/day01.txt");
 
 fn main() {
     let numbers = transform_input(INPUT);

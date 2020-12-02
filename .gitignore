@@ -3,3 +3,4 @@ target
 *.o
 *.hi
 dist-newstyle
+inputs/*.txt

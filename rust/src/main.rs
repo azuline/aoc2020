@@ -1,43 +1,21 @@
-use itertools::Itertools;
-use std::collections::HashSet;
-
-static INPUT: &str = include_str!("../../inputs/day01.txt");
+mod day01;
+mod day02;
+use std::env;
 
 fn main() {
-    let numbers = transform_input(INPUT);
+    let args: Vec<String> = env::args().collect();
 
-    println!("Part 1: {}", part1(&numbers));
-    println!("Part 2: {}", part2(&numbers));
-}
-
-fn transform_input(input: &str) -> Vec<i32> {
-    input.split("\n").filter_map(|x| x.parse().ok()).collect()
-}
-
-fn part1(numbers: &Vec<i32>) -> i32 {
-    let mut complements: HashSet<i32> = HashSet::new();
-
-    for x in numbers.iter() {
-        if complements.contains(x) {
-            return x * (2020 - x);
-        }
-
-        complements.insert(2020 - x);
+    if args.len() != 2 {
+        println!("Please invoke with a day~");
+        return;
     }
 
-    panic!("No pair found.")
-}
-
-fn part2(numbers: &Vec<i32>) -> i32 {
-    let mut complements: HashSet<i32> = HashSet::new();
-
-    for (x, y) in numbers.iter().tuple_combinations() {
-        if complements.contains(&(x + y)) {
-            return x * y * (2020 - x - y);
+    match args[1].parse() {
+        Ok(1) => day01::run(),
+        Ok(2) => day02::run(),
+        _ => {
+            println!("Invalid day~");
+            return;
         }
-
-        complements.insert(2020 - x - y);
-    }
-
-    panic!("No triplet found.");
+    };
 }

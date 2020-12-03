@@ -1,6 +1,7 @@
+use std::env;
 mod day01;
 mod day02;
-use std::env;
+mod day03;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -13,6 +14,7 @@ fn main() {
     match args[1].parse() {
         Ok(1) => day01::run(),
         Ok(2) => day02::run(),
+        Ok(3) => day03::run(),
         _ => {
             println!("Invalid day~");
             return;

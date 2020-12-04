@@ -1,9 +1,15 @@
 use itertools::Itertools;
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::{collections::HashMap, str::FromStr};
 
 static INPUT: &str = include_str!("../../inputs/day04.txt");
-static HCL_CHARS: &str = "0123456789abcdef";
 static ECL_COLORS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+
+lazy_static! {
+    static ref HCL_REGEX: Regex = Regex::new(r"^#[0-9a-f]{6}$").unwrap();
+    static ref PID_REGEX: Regex = Regex::new(r"^\d{9}$").unwrap();
+}
 
 type Passports<'a> = Vec<HashMap<&'a str, &'a str>>;
 type ValidatorResult = Result<bool, <i32 as FromStr>::Err>;
@@ -28,21 +34,9 @@ pub fn run() {
                 }
             }),
         ),
-        (
-            "hcl",
-            Box::new(|x| {
-                Ok(x.starts_with("#")
-                    && x.get(1..x.len())
-                        .unwrap()
-                        .chars()
-                        .all(|c| HCL_CHARS.contains(c)))
-            }),
-        ),
+        ("hcl", Box::new(|x| Ok(HCL_REGEX.is_match(x)))),
         ("ecl", Box::new(|x| Ok(ECL_COLORS.contains(&x)))),
-        (
-            "pid",
-            Box::new(|x| Ok(x.len() == 9 && x.parse::<i32>().is_ok())),
-        ),
+        ("pid", Box::new(|x| Ok(PID_REGEX.is_match(x)))),
     ];
 
     println!("Part 1: {}", part1(&passports, &validators));

@@ -19,8 +19,8 @@ def transform_to_costs(passes: List[str]) -> List[int]:
 
 
 def calculate_cost(x: str) -> int:
-    x = x.replace("F", "0").replace("B", "1").replace("L", "0").replace("R", "1")
-    return int(x[:7], 2) * 8 + int(x[7:], 2)
+    bin_ = x.replace("F", "0").replace("B", "1").replace("L", "0").replace("R", "1")
+    return int(bin_, 2)
 
 
 def part2(passes: List[str]) -> int:

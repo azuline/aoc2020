@@ -27,10 +27,7 @@ fn transform_input(input: &str) -> Vec<SeatID> {
                 .replace("L", "0")
                 .replace("R", "1");
 
-            let row = u32::from_str_radix(&bin[..7], 2).unwrap();
-            let col = u32::from_str_radix(&bin[7..], 2).unwrap();
-
-            row * 8 + col
+            u32::from_str_radix(&bin, 2).unwrap()
         })
         .collect();
 

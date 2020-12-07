@@ -18,7 +18,7 @@ pub fn run() {
 fn transform_input(input: &str) -> Vec<SeatID> {
     let mut seat_ids: Vec<SeatID> = input
         .trim_end()
-        .split("\n")
+        .split('\n')
         .map(|x| {
             // Any way to do this in place? Allocates a new string for each replace...
             let bin = x
@@ -31,15 +31,15 @@ fn transform_input(input: &str) -> Vec<SeatID> {
         })
         .collect();
 
-    seat_ids.sort();
+    seat_ids.sort_unstable();
     seat_ids
 }
 
-fn part1(seat_ids: &Vec<SeatID>) -> SeatID {
+fn part1(seat_ids: &[SeatID]) -> SeatID {
     *seat_ids.iter().max().unwrap()
 }
 
-fn part2(seat_ids: &Vec<SeatID>) -> SeatID {
+fn part2(seat_ids: &[SeatID]) -> SeatID {
     for (id, next_id) in seat_ids.iter().tuple_windows() {
         if id + 2 == *next_id {
             return id + 1;

@@ -14,7 +14,7 @@ fn transform_input(input: &str) -> Vec<i32> {
     input.lines().filter_map(|x| x.parse().ok()).collect()
 }
 
-fn part1(numbers: &Vec<i32>) -> i32 {
+fn part1(numbers: &[i32]) -> i32 {
     let mut complements: HashSet<i32> = HashSet::new();
 
     for x in numbers.iter() {
@@ -28,7 +28,7 @@ fn part1(numbers: &Vec<i32>) -> i32 {
     panic!("No pair found.")
 }
 
-fn part2(numbers: &Vec<i32>) -> i32 {
+fn part2(numbers: &[i32]) -> i32 {
     let mut complements: HashSet<i32> = HashSet::new();
 
     for (x, y) in numbers.iter().tuple_combinations() {

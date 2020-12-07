@@ -32,7 +32,7 @@ fn transform_input(input: &str) -> Vec<Policy> {
         .collect()
 }
 
-fn part1(policies: &Vec<Policy>) -> usize {
+fn part1(policies: &[Policy]) -> usize {
     policies
         .iter()
         .filter(|&(low, high, pol_char, pass)| {
@@ -42,7 +42,7 @@ fn part1(policies: &Vec<Policy>) -> usize {
         .count()
 }
 
-fn part2(policies: &Vec<Policy>) -> usize {
+fn part2(policies: &[Policy]) -> usize {
     policies
         .iter()
         .filter(|&(low, high, pol_char, pass)| {

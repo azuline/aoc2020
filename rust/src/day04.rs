@@ -11,7 +11,7 @@ lazy_static! {
     static ref PID_REGEX: Regex = Regex::new(r"^\d{9}$").unwrap();
 }
 
-type Passports<'a> = Vec<HashMap<&'a str, &'a str>>;
+type Passport<'a> = HashMap<&'a str, &'a str>;
 type ValidatorResult = Result<bool, <i32 as FromStr>::Err>;
 type Validator<'a> = (&'a str, Box<dyn Fn(&'a str) -> ValidatorResult>);
 
@@ -48,26 +48,26 @@ fn check_range(value: &str, lower: i32, upper: i32) -> ValidatorResult {
     Ok(value >= lower && value <= upper)
 }
 
-fn transform_input(input: &str) -> Passports {
+fn transform_input(input: &str) -> Vec<Passport> {
     input
         .split("\n\n")
         .map(|passport| {
             passport
                 .split_whitespace()
-                .map(|x| x.splitn(2, ":").collect_tuple().unwrap())
+                .map(|x| x.splitn(2, ':').collect_tuple().unwrap())
                 .collect()
         })
         .collect()
 }
 
-fn part1(passports: &Passports, validators: &Vec<Validator>) -> usize {
+fn part1(passports: &[Passport], validators: &[Validator]) -> usize {
     passports
         .iter()
         .filter(|passport| validators.iter().all(|(key, _)| passport.contains_key(key)))
         .count()
 }
 
-fn part2<'a>(passports: &'a Passports, validators: &Vec<Validator<'a>>) -> usize {
+fn part2<'a>(passports: &'a [Passport], validators: &[Validator<'a>]) -> usize {
     passports
         .iter()
         .filter(|&passport| {

@@ -23,7 +23,6 @@ fn main() {
         Ok(6) => day06::run(),
         _ => {
             println!("Invalid day~");
-            return;
         }
-    };
+    }
 }

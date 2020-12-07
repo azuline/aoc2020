@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 static INPUT: &str = include_str!("../../inputs/day06.txt");
 
-type AnswerGroups<'a> = Vec<Vec<&'a str>>;
+type AnswerGroup<'a> = Vec<&'a str>;
 
 pub fn run() {
     let groups = transform_input(INPUT);
@@ -11,15 +11,15 @@ pub fn run() {
     println!("Part 2: {}", part2(&groups));
 }
 
-fn transform_input(input: &str) -> AnswerGroups {
+fn transform_input(input: &str) -> Vec<AnswerGroup> {
     input
         .trim_end()
         .split("\n\n")
-        .map(|x| x.split("\n").collect())
+        .map(|x| x.split('\n').collect())
         .collect()
 }
 
-fn part1(groups: &AnswerGroups) -> usize {
+fn part1(groups: &[AnswerGroup]) -> usize {
     groups
         .iter()
         .map(|answers| {
@@ -34,7 +34,7 @@ fn part1(groups: &AnswerGroups) -> usize {
         .sum()
 }
 
-fn part2(answers: &AnswerGroups) -> usize {
+fn part2(answers: &[AnswerGroup]) -> usize {
     answers
         .iter()
         .map(|x| {

@@ -1,6 +1,6 @@
 static INPUT: &str = include_str!("../../inputs/day03.txt");
 
-type Lines = Vec<Vec<char>>;
+type Line = Vec<char>;
 
 pub fn run() {
     let (width, lines) = transform_input(INPUT);
@@ -9,13 +9,13 @@ pub fn run() {
     println!("Part 2: {}", part2(width, &lines));
 }
 
-fn transform_input(input: &str) -> (usize, Lines) {
-    let lines: Lines = input.lines().map(|x| x.chars().collect()).collect();
+fn transform_input(input: &str) -> (usize, Vec<Line>) {
+    let lines: Vec<Line> = input.lines().map(|x| x.chars().collect()).collect();
     let width = lines[0].len();
     (width, lines)
 }
 
-fn part1(width: usize, lines: &Lines, x: usize, y: usize) -> usize {
+fn part1(width: usize, lines: &[Line], x: usize, y: usize) -> usize {
     lines
         .iter()
         .step_by(y)
@@ -24,7 +24,7 @@ fn part1(width: usize, lines: &Lines, x: usize, y: usize) -> usize {
         .count()
 }
 
-fn part2(width: usize, lines: &Lines) -> usize {
+fn part2(width: usize, lines: &[Line]) -> usize {
     let slices = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
 
     slices

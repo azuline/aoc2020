@@ -5,46 +5,41 @@ static INPUT: &str = include_str!("../../inputs/day05.txt");
 type SeatID = u32;
 
 pub fn run() {
-    let seat_ids = transform_input(INPUT);
+    let mut seat_ids = transform_input(INPUT);
 
     println!("Part 1: {}", part1(&seat_ids));
-    println!("Part 2: {}", part2(&seat_ids));
+    println!("Part 2: {}", part2(&mut seat_ids));
 }
 
 /// Convert each line in the input into a seat ID. We replace each letter with its
 /// corresponding bit, and from that we calculate the seat ID.
 ///
-/// Then sort it for part 2!
 fn transform_input(input: &str) -> Vec<SeatID> {
-    let mut seat_ids: Vec<SeatID> = input
+    input
         .trim_end()
         .split('\n')
         .map(|x| {
-            // Any way to do this in place? Allocates a new string for each replace...
             let bin = x
-                .replace("F", "0")
-                .replace("B", "1")
-                .replace("L", "0")
-                .replace("R", "1");
+                .replace(&['F', 'L'][..], "0")
+                .replace(&['B', 'R'][..], "1");
 
             u32::from_str_radix(&bin, 2).unwrap()
         })
-        .collect();
-
-    seat_ids.sort_unstable();
-    seat_ids
+        .collect()
 }
 
 fn part1(seat_ids: &[SeatID]) -> SeatID {
     *seat_ids.iter().max().unwrap()
 }
 
-fn part2(seat_ids: &[SeatID]) -> SeatID {
+fn part2(seat_ids: &mut [SeatID]) -> SeatID {
+    seat_ids.sort_unstable();
+
     for (id, next_id) in seat_ids.iter().tuple_windows() {
         if id + 2 == *next_id {
             return id + 1;
         }
     }
 
-    panic!("No seat ID found.");
+    panic!("(Part 2) No seat ID found.");
 }

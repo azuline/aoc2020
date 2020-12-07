@@ -23,27 +23,24 @@ fn part1(groups: &[AnswerGroup]) -> usize {
     groups
         .iter()
         .map(|answers| {
-            let mut seen: HashSet<char> = HashSet::new();
-            for answer in answers.iter() {
-                for c in answer.chars() {
-                    seen.insert(c);
-                }
-            }
-            seen.len()
+            answers
+                .iter()
+                .flat_map(|x| x.chars())
+                .collect::<HashSet<_>>()
+                .len()
         })
         .sum()
 }
 
-fn part2(answers: &[AnswerGroup]) -> usize {
-    answers
+fn part2(groups: &[AnswerGroup]) -> usize {
+    groups
         .iter()
-        .map(|x| {
-            let (head, tail) = x.split_first().unwrap();
-            let initial: Vec<char> = head.chars().collect();
-            tail.iter()
-                .fold(initial, |acc, answer| {
-                    answer.chars().filter(|c| acc.contains(c)).collect()
-                })
+        .map(|answers| {
+            answers
+                .iter()
+                .map(|x| x.chars().collect::<HashSet<_>>())
+                .fold_first(|acc, x| acc.intersection(&x).cloned().collect())
+                .unwrap()
                 .len()
         })
         .sum()

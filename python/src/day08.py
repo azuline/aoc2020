@@ -12,22 +12,16 @@ class DoesntHalt(Exception):
     pass
 
 
-class Operation(Enum):
-    ACC = "acc"
-    JMP = "jmp"
-    NOP = "nop"
-
-
 @dataclass(frozen=True)
 class Instruction:
-    operation: Operation
+    operation: str
     argument: int
 
     def flip(self) -> "Instruction":
-        if self.operation == Operation.JMP:
-            return self.__class__(Operation.NOP, self.argument)
-        if self.operation == Operation.NOP:
-            return self.__class__(Operation.JMP, self.argument)
+        if self.operation == "jmp":
+            return self.__class__("nop", self.argument)
+        if self.operation == "nop":
+            return self.__class__("jmp", self.argument)
 
         raise Exception("You've botched up the flip :(")
 
@@ -37,7 +31,7 @@ def transform_input(input: str) -> List[Instruction]:
 
     for line in input.strip().split("\n"):
         op, arg = line.split(" ", 1)
-        instructions.append(Instruction(Operation(op), int(arg)))
+        instructions.append(Instruction(op, int(arg)))
 
     return instructions
 
@@ -63,11 +57,11 @@ def run_handheld(instructions: List[Instruction]) -> int:
 
         instr = instructions[index]
 
-        if instr.operation == Operation.JMP:
+        if instr.operation == "jmp":
             index += instr.argument
             continue
 
-        if instr.operation == Operation.ACC:
+        if instr.operation == "acc":
             acc += instr.argument
 
         index += 1
@@ -89,10 +83,10 @@ def get_possible_correct_instr_lists(
     instructions: List[Instruction],
 ) -> Generator[List[Instruction], None, None]:
     for i, instr in enumerate(instructions):
-        if instr.operation != Operation.ACC:
-            new_list = instructions.copy()
-            new_list[i] = instr.flip()
-            yield new_list
+        if instr.operation == "acc":
+            continue
+
+        yield instructions[:i] + [instr.flip()] + instructions[i + 1 :]
 
 
 if __name__ == "__main__":

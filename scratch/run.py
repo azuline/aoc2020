@@ -34,73 +34,47 @@ except ValueError:
     pass
 
 
-from collections import defaultdict
-
-bags_map = defaultdict(list)
-inv_map = defaultdict(list)
-
-
+inputs = []
 for line in lines:
-    thing, rest = line.split(" contain ")
-    thing = thing.rstrip("bags .")
-    for x in rest.split(", "):
-        num, type_ = x.split(" ", 1)
-        try:
-            num = int(num)
-        except ValueError:
-            continue
-        type_ = type_.rstrip(" bags.")
-        bags_map[type_].append((thing, num))
-        inv_map[thing].append((type_, num))
+    x, y = line.split(" ")
+    inputs.append((x, int(y)))
 
 
-from pprint import pprint
+def part1(instructions):
+    acc = 0
+    idx = 0
+    executed = set()
+    while idx < len(instructions):
+        if idx in executed:
+            # In original part 1, this was just return acc.
+            return executed, acc
+        executed.add(idx)
+        x, y = instructions[idx]
+        if x == "acc":
+            acc += y
+            idx += 1
+        elif x == "jmp":
+            idx += y
+        else:
+            idx += 1
 
-pprint(bags_map)
-pprint(inv_map)
-
-
-def part1():
-    seen_colors = set(["shiny gold"])
-    visited_colors = set()
-
-    while seen_colors:
-        print("NEW")
-        x = seen_colors.pop()
-        next_ = [x[0] for x in bags_map[x]]
-        print(x)
-        print(next_)
-        for y in next_:
-            if y not in visited_colors:
-                seen_colors.add(y)
-
-        visited_colors.add(x)
-
-    return len(visited_colors) - 1
+    return "DONE", acc
 
 
 def part2():
-    seen_colors = set([("shiny gold", 1)])
-    visited_colors = set()
-    count = 0
+    instrs, _ = part1(inputs)
+    jumps = [i for i in instrs if inputs[i][0] == "jmp"]
+    for x in jumps:
+        # NEEDED TO COPY THE LIST AHHHHHHHHHHHHHHHHHHHHh FUCK
+        new_inputs = inputs.copy()
+        new_inputs[x] = ("nop", inputs[x][1])
+        ret, acc = part1(new_inputs)
+        if ret == "DONE":
+            return acc
 
-    while seen_colors:
-        print("NEW")
-        (x, x_amt) = seen_colors.pop()
-        print(x)
-        print(x_amt)
-        nexts = inv_map[x]
-        print(nexts)
-
-        for y, y_amt in nexts:
-            count += x_amt * y_amt
-            seen_colors.add((y, x_amt * y_amt))
-
-        visited_colors.add(x)
-
-    return count
+    raise Exception("WTF")
 
 
-# print(part1())
+print(part1(inputs))
 print("----------")
 print(part2())

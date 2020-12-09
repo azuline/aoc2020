@@ -37,12 +37,47 @@ except ValueError:
 # RACING CODE STARTS HERE
 
 
+def create_sums(i):
+    sums_of_prev_25 = set()
+    for x, y in itertools.combinations(numbers[i : i + 25], 2):
+        sums_of_prev_25.add(x + y)
+
+    return sums_of_prev_25
+
+
 def part1():
-    pass
+    sums_of_prev = create_sums(0)
+
+    for i, x in enumerate(numbers[25:], start=1):
+        if x not in sums_of_prev:
+            return x
+        sums_of_prev = create_sums(i)
+
+    raise Exception
 
 
 def part2():
-    pass
+    target = part1()
+
+    cur_sum = numbers[0]
+    bottom = 0
+    top = 0
+
+    while top < len(numbers):
+        if cur_sum == target:
+            break
+        elif cur_sum > target:
+            cur_sum -= numbers[bottom]
+            bottom += 1
+        else:
+            top += 1
+            cur_sum += numbers[top]
+
+    assert cur_sum == target
+    range = numbers[bottom:top]
+    print(bottom, top)
+    print(range)
+    return min(range) + max(range)
 
 
 pprint(part1())

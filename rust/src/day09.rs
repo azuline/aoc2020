@@ -1,4 +1,4 @@
-use itertools::Itertools;
+use std::collections::HashSet;
 
 static INPUT: &str = include_str!("../../inputs/day09.txt");
 
@@ -9,7 +9,7 @@ pub fn run() {
     println!("Part 2: {}", part2(&numbers));
 }
 
-fn transform_input(input: &'static str) -> Vec<u64> {
+fn transform_input(input: &'static str) -> Vec<i64> {
     input
         .trim_end()
         .split('\n')
@@ -17,7 +17,7 @@ fn transform_input(input: &'static str) -> Vec<u64> {
         .collect()
 }
 
-fn part1(numbers: &[u64]) -> u64 {
+fn part1(numbers: &[i64]) -> i64 {
     *numbers
         .iter()
         .skip(25)
@@ -27,14 +27,21 @@ fn part1(numbers: &[u64]) -> u64 {
         .1
 }
 
-fn in_25_prev_sums(number: u64, numbers: &[u64]) -> bool {
-    numbers
-        .iter()
-        .combinations(2)
-        .any(|c| number == c[0] + c[1])
+fn in_25_prev_sums(number: i64, numbers: &[i64]) -> bool {
+    let mut complements: HashSet<i64> = HashSet::new();
+
+    for x in numbers {
+        if complements.contains(x) {
+            return true;
+        }
+
+        complements.insert(number - x);
+    }
+
+    return false;
 }
 
-fn part2(numbers: &[u64]) -> u64 {
+fn part2(numbers: &[i64]) -> i64 {
     let target = part1(numbers);
     let contiguous_range = find_contiguous_range(numbers, target);
 
@@ -44,7 +51,7 @@ fn part2(numbers: &[u64]) -> u64 {
     min + max
 }
 
-fn find_contiguous_range(numbers: &[u64], target: u64) -> &[u64] {
+fn find_contiguous_range(numbers: &[i64], target: i64) -> &[i64] {
     let mut current_sum = numbers[0];
     let mut bottom = 0;
     let mut top = 0;

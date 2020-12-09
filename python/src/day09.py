@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-from itertools import combinations
 from pathlib import Path
-from typing import List, Set
+from typing import List
 
 INPUT_FILE = Path.cwd().parent / "inputs" / "day09.txt"
 
@@ -11,18 +10,22 @@ def transform_input(input: str) -> List[int]:
     return [int(x) for x in input.strip().split("\n")]
 
 
-def calculate_prev_25_sums(numbers: List[int]) -> Set[int]:
-    return {x + y for x, y in combinations(numbers, 2)}
+def in_prev_25_sums(number: int, numbers: List[int]) -> bool:
+    complements = set()
+
+    for x in numbers:
+        if x in complements:
+            return True
+
+        complements.add(number - x)
+
+    return False
 
 
 def part1(numbers: List[int]) -> int:
-    sums = calculate_prev_25_sums(numbers[:25])
-
-    for i, number in enumerate(numbers[25:], start=1):
-        if number not in sums:
+    for i, number in enumerate(numbers[25:]):
+        if not in_prev_25_sums(number, numbers[i : i + 25]):
             return number
-
-        sums = calculate_prev_25_sums(numbers[i : i + 25])
 
     raise Exception("Didn't find any weakness.")
 

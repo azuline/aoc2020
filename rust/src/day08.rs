@@ -7,8 +7,6 @@ static INPUT: &str = include_str!("../../inputs/day08.txt");
 type Instruction = (&'static str, i32);
 
 pub fn run() {
-    // One mapping each bag to the bags it contains.
-    // The other mapping each bag to the bags that contain it.
     let instructions = transform_input(INPUT);
 
     println!("Part 1: {}", part1(&instructions));

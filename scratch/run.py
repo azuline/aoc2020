@@ -2,11 +2,11 @@
 
 import itertools
 import re
+from collections import defaultdict, deque
 from functools import reduce
 from pathlib import Path
-
-YEAR = 2020
-DAY = 3
+from pprint import pprint
+from typing import List
 
 
 def product(list_):
@@ -21,60 +21,30 @@ def flatten(list_):
 input_file = Path(__file__).parent / "input"
 
 with input_file.open("r") as f:
-    data = f.read()
+    data: str = f.read()
 
 # EARLY VARIABLE DEFINITIONS
 
-words = [x.strip() for x in data.split()]
-lines = [x.strip() for x in data.rstrip("\n").split("\n")]
+words: List[str] = [x.strip() for x in data.split()]
+lines: List[str] = [x.strip() for x in data.rstrip("\n").split("\n")]
+charmap = [list(line) for line in lines]
 
 try:
-    numbers = [int(x) for x in re.findall(r"-?\d+", data)]
+    numbers: List[int] = [int(x) for x in re.findall(r"-?\d+", data)]
 except ValueError:
     pass
 
-
-inputs = []
-for line in lines:
-    x, y = line.split(" ")
-    inputs.append((x, int(y)))
+# RACING CODE STARTS HERE
 
 
-def part1(instructions):
-    acc = 0
-    idx = 0
-    executed = set()
-    while idx < len(instructions):
-        if idx in executed:
-            # In original part 1, this was just return acc.
-            return executed, acc
-        executed.add(idx)
-        x, y = instructions[idx]
-        if x == "acc":
-            acc += y
-            idx += 1
-        elif x == "jmp":
-            idx += y
-        else:
-            idx += 1
-
-    return "DONE", acc
+def part1():
+    pass
 
 
 def part2():
-    instrs, _ = part1(inputs)
-    jumps = [i for i in instrs if inputs[i][0] == "jmp"]
-    for x in jumps:
-        # NEEDED TO COPY THE LIST AHHHHHHHHHHHHHHHHHHHHh FUCK
-        new_inputs = inputs.copy()
-        new_inputs[x] = ("nop", inputs[x][1])
-        ret, acc = part1(new_inputs)
-        if ret == "DONE":
-            return acc
-
-    raise Exception("WTF")
+    pass
 
 
-print(part1(inputs))
+pprint(part1())
 print("----------")
-print(part2())
+pprint(part2())

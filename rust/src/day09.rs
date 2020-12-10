@@ -38,7 +38,7 @@ fn in_25_prev_sums(number: i64, numbers: &[i64]) -> bool {
         complements.insert(number - x);
     }
 
-    return false;
+    false
 }
 
 fn part2(numbers: &[i64]) -> i64 {

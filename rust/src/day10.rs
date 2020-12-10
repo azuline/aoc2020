@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use itertools::Itertools;
-
 static INPUT: &str = include_str!("../../inputs/day10.txt");
 
 pub fn run() {
@@ -12,11 +10,7 @@ pub fn run() {
 }
 
 fn transform_input(input: &'static str) -> Vec<u64> {
-    let mut numbers: Vec<u64> = input
-        .trim_end()
-        .split('\n')
-        .map(|x| x.parse().unwrap())
-        .collect();
+    let mut numbers: Vec<u64> = input.lines().map(|x| x.parse().unwrap()).collect();
 
     numbers.sort_unstable();
     numbers.insert(0, 0);
@@ -26,7 +20,7 @@ fn transform_input(input: &'static str) -> Vec<u64> {
 }
 
 fn part1(numbers: &[u64]) -> usize {
-    let diffs: Vec<u64> = numbers.iter().tuple_windows().map(|(x, y)| y - x).collect();
+    let diffs: Vec<u64> = numbers.windows(2).map(|x| x[1] - x[0]).collect();
 
     let off_ones = diffs.iter().filter(|x| **x == 1).count();
     let off_threes = diffs.iter().filter(|x| **x == 3).count();
@@ -41,10 +35,9 @@ fn part2(numbers: &[u64]) -> u64 {
             return 1;
         }
 
-        // If we have already calculated the result, don't bother re-calculating.
         if let Some(num_paths) = memo_table.get(&idx) {
             return *num_paths;
-        }
+        };
 
         // Recursive case.
 

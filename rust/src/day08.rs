@@ -15,8 +15,7 @@ pub fn run() {
 
 fn transform_input(input: &'static str) -> Vec<Instruction> {
     input
-        .trim_end()
-        .split('\n')
+        .lines()
         .map(|x| {
             let (op, arg) = x.splitn(2, ' ').next_tuple().unwrap();
             (op, arg.parse().unwrap())

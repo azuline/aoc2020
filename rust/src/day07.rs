@@ -28,7 +28,7 @@ fn transform_input(input: &str) -> (BagMap, BagMapWithCount) {
     let mut from_containing: BagMap = HashMap::new();
     let mut to_containing: BagMapWithCount = HashMap::new();
 
-    for rule in input.trim_end().split('\n') {
+    for rule in input.lines() {
         let (from_bag, to_bags) = rule.splitn(2, " bags contain ").next_tuple().unwrap();
 
         for cap in BAG_AMOUNT_REGEX.captures_iter(to_bags) {

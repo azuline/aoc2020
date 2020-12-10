@@ -16,8 +16,7 @@ pub fn run() {
 ///
 fn transform_input(input: &str) -> Vec<SeatID> {
     input
-        .trim_end()
-        .split('\n')
+        .lines()
         .map(|x| {
             let bin = x
                 .replace(&['F', 'L'][..], "0")

@@ -10,11 +10,7 @@ pub fn run() {
 }
 
 fn transform_input(input: &'static str) -> Vec<i64> {
-    input
-        .trim_end()
-        .split('\n')
-        .map(|x| x.parse().unwrap())
-        .collect()
+    input.lines().map(|x| x.parse().unwrap()).collect()
 }
 
 fn part1(numbers: &[i64]) -> i64 {

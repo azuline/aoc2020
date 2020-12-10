@@ -15,7 +15,7 @@ fn transform_input(input: &str) -> Vec<AnswerGroup> {
     input
         .trim_end()
         .split("\n\n")
-        .map(|x| x.split('\n').collect())
+        .map(|x| x.lines().collect())
         .collect()
 }
 

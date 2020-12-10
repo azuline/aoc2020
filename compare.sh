@@ -1,6 +1,6 @@
 #/usr/bin/env bash
 
-DAY_LIMIT=9
+DAY_LIMIT=10
 
 function compare() {
     day=$(printf "%02d" $1)
@@ -9,7 +9,7 @@ function compare() {
 
 if [[ $1 = "all" ]]; then
     for day in $(seq 1 $DAY_LIMIT); do
-        printf "Checking day $day... "
+        printf "Checking day %02d... " $day
 
         compare $day
 

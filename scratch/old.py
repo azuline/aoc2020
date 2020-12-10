@@ -32,13 +32,6 @@ def transform_input(input: str) -> List[Instruction]:
     return instructions
 
 
-def part1(instructions: List[Instruction]) -> int:
-    try:
-        return run_handheld(instructions)
-    except DoesntHalt as e:
-        return e.args[0]
-
-
 def run_handheld(instructions: List[Instruction]) -> int:
     acc = 0
     index = 0

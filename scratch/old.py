@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
+import itertools
 from dataclasses import dataclass
+from functools import reduce
 from typing import Generator, List, Set
+
+
+def product(list_):
+    return reduce(lambda x, y: x * y, list_, 1)
+
+
+def flatten(list_):
+    return list(itertools.chain(*list_))
 
 
 class DoesntHalt(Exception):

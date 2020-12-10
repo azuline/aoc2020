@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 
+"""
+`./run.py` executes with the input currently in the clipboard. Use this for testing.
+`./run.py s` executes with the real input and attempts a submission.
+"""
+
 import collections
 import itertools
 import re
+import sys
 from collections import defaultdict, deque
 from functools import reduce
 from itertools import combinations
@@ -10,83 +16,46 @@ from pathlib import Path
 from pprint import pprint
 from typing import List
 
+import aocd  # type: ignore
+import pyperclip  # type: ignore
+
 import old
-from old import DoesntHalt, Instruction, run_handheld
+from old import DoesntHalt, Instruction, flatten, product, run_handheld
 
+LIVE_RUN = len(sys.argv) > 1 and sys.argv[1].startswith("s")
 
-def product(list_):
-    return reduce(lambda x, y: x * y, list_, 1)
+# TODO: Remember to update these!
+YEAR = 2020
+DAY = 11
 
-
-def flatten(list_):
-    return list(itertools.chain(*list_))
-
-
-# FILE READING
-input_file = Path(__file__).parent / "input"
-
-with input_file.open("r") as f:
-    data: str = f.read()
+# Depending on whether this is a test run or not, get data from clipboard or from aocd.
+data = aocd.get_data(day=DAY, year=YEAR) if LIVE_RUN else pyperclip.paste()
 
 # EARLY VARIABLE DEFINITIONS
-
 words: List[str] = [x.strip() for x in data.split()]
 lines: List[str] = [x.strip() for x in data.rstrip("\n").split("\n")]
-charmap = [list(line) for line in lines]
+charmap: List[List[str]] = [list(line) for line in lines]
 
-try:
-    numbers: List[int] = [int(x) for x in re.findall(r"-?\d+", data)]
-except ValueError:
-    pass
+single_digits: List[int] = [int(x) for x in re.findall(r"\d", data)]
+full_numbers: List[int] = [int(x) for x in re.findall(r"-?\d+", data)]
 
 # RACING CODE STARTS HERE
 
-jolts = sorted(numbers)
-
 
 def part1():
-    num_1 = 0
-    num_3 = 0
-
-    prev = 0
-    for j in jolts:
-        if j - prev == 1:
-            num_1 += 1
-        elif j - prev == 3:
-            num_3 += 1
-
-        prev = j
-
-    return num_1 * (num_3 + 1)
+    pass
 
 
-memo = {}
+def part2():
+    pass
 
 
-def part2(jolts, prev=0):
-    if jolts == []:
-        return 0
-    if len(jolts) == 1:
-        return 1
+p1_answer = part1()
+print(f"Part 1:\n\n{p1_answer}\n")
+if p1_answer and LIVE_RUN:
+    aocd.submit(p1_answer, day=DAY, year=YEAR, part="a")
 
-    cur = jolts[0]
-    if cur in memo:
-        return memo[cur]
-
-    if len(jolts) > 2 and jolts[2] <= prev + 3:
-        r = part2(jolts[1:], cur) + part2(jolts[2:], cur) + part2(jolts[3:], cur)
-        memo[cur] = r
-        return r
-    if len(jolts) > 1 and jolts[1] <= prev + 3:
-        r = part2(jolts[1:], cur) + part2(jolts[2:], cur)
-        memo[cur] = r
-        return r
-
-    r = part2(jolts[1:], cur)
-    memo[cur] = r
-    return r
-
-
-pprint(part1())
-print("----------")
-pprint(part2(jolts + [jolts[-1] + 3]))
+p2_answer = part2()
+print(f"Part 2:\n\n{p2_answer}\n")
+if p2_answer and LIVE_RUN:
+    aocd.submit(p2_answer, day=DAY, year=YEAR, part="b")

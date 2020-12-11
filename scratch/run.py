@@ -10,7 +10,7 @@ import itertools
 import re
 import sys
 from collections import defaultdict, deque
-from functools import reduce
+from functools import lru_cache, reduce
 from itertools import combinations
 from pathlib import Path
 from pprint import pprint
@@ -41,19 +41,84 @@ full_numbers: List[int] = [int(x) for x in re.findall(r"-?\d+", data)]
 
 # RACING CODE STARTS HERE
 
-
-def part1():
-    pass
+pass
 
 
 def part2():
-    pass
+    prev = [x.copy() for x in charmap]
+
+    while True:
+        from pprint import pprint
+
+        for x, row in enumerate(prev):
+            for y, char in enumerate(row):
+                if char == ".":
+                    continue
+                elif char == "L":
+                    for cx, cy in get_adjacent(prev, x, y):
+                        if prev[cx][cy] == "#":
+                            break
+                    else:
+                        charmap[x][y] = "#"
+                elif char == "#":
+                    num_occ = 0
+                    for cx, cy in get_adjacent(prev, x, y):
+                        if prev[cx][cy] == "#":
+                            num_occ += 1
+
+                    if num_occ >= 5:
+                        charmap[x][y] = "L"
+
+        if prev == charmap:
+            break
+
+        prev = [x.copy() for x in charmap]
+
+    num_occ = 0
+
+    for col in charmap:
+        for x in col:
+            if x == "#":
+                num_occ += 1
+
+    return num_occ
 
 
-p1_answer = part1()
-print(f"Part 1:\n\n{p1_answer}\n")
-if p1_answer and LIVE_RUN:
-    aocd.submit(p1_answer, day=DAY, year=YEAR, part="a")
+def get_adjacent(prev, bx, by):
+    adjs = []
+    for dx, dy in [
+        (-1, -1),
+        (-1, 0),
+        (-1, 1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+        (0, 1),
+        (0, -1),
+    ]:
+        x = bx
+        y = by
+        while True:
+            x += dx
+            y += dy
+
+            if x < 0 or y < 0 or x >= len(prev) or y >= len(prev[0]):
+                break
+
+            try:
+                if prev[x][y] != ".":
+                    adjs.append((x, y))
+                    break
+            except IndexError:
+                break
+
+    return adjs
+
+
+# p1_answer = part1()
+# print(f"Part 1:\n\n{p1_answer}\n")
+# if p1_answer and LIVE_RUN:
+#     aocd.submit(p1_answer, day=DAY, year=YEAR, part="a")
 
 p2_answer = part2()
 print(f"Part 2:\n\n{p2_answer}\n")

@@ -5,6 +5,17 @@ from dataclasses import dataclass
 from functools import reduce
 from typing import Generator, List, Set
 
+EIGHT_DIRECTIONS = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+]
+
 
 def product(list_):
     return reduce(lambda x, y: x * y, list_, 1)

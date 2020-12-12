@@ -1,6 +1,6 @@
 #/usr/bin/env bash
 
-DAY_LIMIT=10
+DAY_LIMIT=11
 
 function compare() {
     day=$(printf "%02d" $1)

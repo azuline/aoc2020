@@ -50,64 +50,15 @@ full_numbers: List[int] = [int(x) for x in re.findall(r"-?\d+", data)]
 
 # RACING CODE STARTS HERE
 
-first_min = int(lines[0])
-bus_intervals = [int(x) for x in lines[1].split(",") if x != "x"]
+pass
 
 
 def part1():
-    count = 0
-    next_arrival = {b: 0 for b in bus_intervals}
-    while True:
-        for x, na in next_arrival.items():
-            if na == count:
-                if na >= first_min:
-                    return (na - first_min) * x
-
-                next_arrival[x] += x
-
-        count += 1
-
-
-def chinese_remainder_theorem(n, N, a):
-    result = 0
-
-    for i, (ni, ai) in enumerate(zip(n, a)):
-        _, _, si = extended_gcd(ni, N // ni)
-        result += ai * si * (N // ni)
-
-    return (-result) % N
-
-
-def extended_gcd(a, b):
-    """
-    Recursive solution hits max recursive depth... depressing state of affairs
-    Python...
-    """
-    x, y, u, v = 0, 1, 1, 0
-
-    while a != 0:
-        q, r = b // a, b % a
-        m, n = x - u * q, y - v * q
-        b, a, x, y, u, v, = (
-            a,
-            r,
-            u,
-            v,
-            m,
-            n,
-        )
-
-    return b, x, y
+    pass
 
 
 def part2():
-    bus_intervals = [(int(x), i) for i, x in enumerate(lines[1].split(",")) if x != "x"]
-    N = product([x for x, _ in bus_intervals])
-
-    n = [x[0] for x in bus_intervals]
-    a = [x[1] for x in bus_intervals]
-
-    return chinese_remainder_theorem(n, N, a)
+    pass
 
 
 p1_answer = part1()

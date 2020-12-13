@@ -28,7 +28,7 @@ class Instruction:
 def transform_input(input: str) -> List[Instruction]:
     instructions = []
 
-    for line in input.strip().split("\n"):
+    for line in input.splitlines():
         op, arg = line.split(" ", 1)
         instructions.append(Instruction(op, int(arg)))
 

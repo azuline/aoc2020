@@ -15,7 +15,7 @@ def transform_input(input: str) -> Tuple[ToContaining, FromContaining]:
     to_containing = defaultdict(list)
     from_containing = defaultdict(list)
 
-    for line in input.strip().split("\n"):
+    for line in input.splitlines():
         parent_bag, rest = line.split(" bags contain ", 1)
 
         for num_bags, child_bag in re.findall(r"(\d+) (.+?) bag", rest):

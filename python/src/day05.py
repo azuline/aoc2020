@@ -7,7 +7,7 @@ INPUT_FILE = Path.cwd().parent / "inputs" / "day05.txt"
 
 
 def transform_input(input: str) -> List[str]:
-    return input.strip().split("\n")
+    return input.splitlines()
 
 
 def part1(passes: List[str]) -> int:

@@ -7,7 +7,7 @@ INPUT_FILE = Path.cwd().parent / "inputs" / "day09.txt"
 
 
 def transform_input(input: str) -> List[int]:
-    return [int(x) for x in input.strip().split("\n")]
+    return [int(x) for x in input.splitlines()]
 
 
 def in_prev_25_sums(number: int, numbers: List[int]) -> bool:

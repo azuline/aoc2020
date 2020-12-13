@@ -9,7 +9,7 @@ Have not written a nicer one.
 from pathlib import Path
 from typing import List, Tuple
 
-INPUT_FILE = Path.cwd().parent / "inputs" / "day11.txt"
+INPUT_FILE = Path.cwd().parent / "inputs" / "day12.txt"
 
 directions = {
     "E": (1, 0),
@@ -30,7 +30,7 @@ indices = {
 def transform_input(input: str) -> List[Tuple[str, int]]:
     actions = []
 
-    for x in input.strip().split("\n"):
+    for x in input.splitlines():
         actions.append((x[0], int(x[1:])))
 
     return actions

@@ -8,7 +8,7 @@ INPUT_FILE = Path.cwd().parent / "inputs" / "day10.txt"
 
 
 def transform_input(input: str) -> List[int]:
-    numbers = sorted([int(x) for x in input.strip().split("\n")])
+    numbers = sorted([int(x) for x in input.splitlines()])
     return [0, *numbers, numbers[-1] + 3]
 
 

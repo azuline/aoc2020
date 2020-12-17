@@ -1,3 +1,4 @@
+use cached::proc_macro::cached;
 use itertools::Itertools;
 use std::collections::HashMap;
 
@@ -71,87 +72,79 @@ impl IntoIterator for Dimensions {
     }
 }
 
-trait GridFns {
-    fn get_mutating_coords(&self, grid: &Grid) -> Dimensions;
-    fn get_adjacent_cubes(&self, coord: &Coord) -> Vec<Coord>;
+struct GridFns {
+    get_mutating_coords: Box<dyn Fn(&Grid) -> Dimensions>,
+    get_adjacent_cubes: Box<dyn Fn(Coord) -> Vec<Coord>>,
 }
 
-#[derive(Clone)]
-struct ThreeDimensionFns {}
+fn get_mutating_coords_3d(grid: &Grid) -> Dimensions {
+    let Dimensions {
+        x: old_x,
+        y: old_y,
+        z: old_z,
+        w: old_w,
+    } = grid.get_dimensions();
 
-impl GridFns for ThreeDimensionFns {
-    fn get_mutating_coords(&self, grid: &Grid) -> Dimensions {
-        let Dimensions {
-            x: old_x,
-            y: old_y,
-            z: old_z,
-            w: old_w,
-        } = grid.get_dimensions();
-
-        Dimensions {
-            x: (old_x.0 - 1, old_x.1 + 1),
-            y: (old_y.0 - 1, old_y.1 + 1),
-            z: (old_z.0 - 1, old_z.1 + 1),
-            w: old_w,
-        }
-    }
-
-    fn get_adjacent_cubes(&self, (x, y, z, w): &Coord) -> Vec<Coord> {
-        THREE_ADJACENTS
-            .iter()
-            .combinations_with_replacement(3)
-            .filter(|adj| *adj[0] != 0 || *adj[1] != 0 || *adj[2] != 0)
-            .flat_map(|c| c.into_iter().permutations(3).collect_vec())
-            .unique()
-            .map(|adj| (x + *adj[0], y + *adj[1], z + *adj[2], *w))
-            .collect()
+    Dimensions {
+        x: (old_x.0 - 1, old_x.1 + 1),
+        y: (old_y.0 - 1, old_y.1 + 1),
+        z: (old_z.0 - 1, old_z.1 + 1),
+        w: old_w,
     }
 }
 
-#[derive(Clone)]
-struct FourDimensionFns {}
+#[cached]
+fn get_adjacent_cubes_3d((x, y, z, w): Coord) -> Vec<Coord> {
+    THREE_ADJACENTS
+        .iter()
+        .combinations_with_replacement(3)
+        .filter(|adj| *adj[0] != 0 || *adj[1] != 0 || *adj[2] != 0)
+        .flat_map(|c| c.into_iter().permutations(3).collect_vec())
+        .unique()
+        .map(|adj| (x + *adj[0], y + *adj[1], z + *adj[2], *w))
+        .collect()
+}
 
-impl GridFns for FourDimensionFns {
-    fn get_mutating_coords(&self, grid: &Grid) -> Dimensions {
-        let Dimensions {
-            x: old_x,
-            y: old_y,
-            z: old_z,
-            w: old_w,
-        } = grid.get_dimensions();
+fn get_mutating_coords_4d(grid: &Grid) -> Dimensions {
+    let Dimensions {
+        x: old_x,
+        y: old_y,
+        z: old_z,
+        w: old_w,
+    } = grid.get_dimensions();
 
-        Dimensions {
-            x: (old_x.0 - 1, old_x.1 + 1),
-            y: (old_y.0 - 1, old_y.1 + 1),
-            z: (old_z.0 - 1, old_z.1 + 1),
-            w: (old_w.0 - 1, old_w.1 + 1),
-        }
-    }
-
-    fn get_adjacent_cubes(&self, (x, y, z, w): &Coord) -> Vec<Coord> {
-        THREE_ADJACENTS
-            .iter()
-            .combinations_with_replacement(4)
-            .filter(|adj| *adj[0] != 0 || *adj[1] != 0 || *adj[2] != 0 || *adj[3] != 0)
-            .flat_map(|c| c.into_iter().permutations(4).collect_vec())
-            .unique()
-            .map(|adj| (x + *adj[0], y + *adj[1], z + *adj[2], w + *adj[3]))
-            .collect()
+    Dimensions {
+        x: (old_x.0 - 1, old_x.1 + 1),
+        y: (old_y.0 - 1, old_y.1 + 1),
+        z: (old_z.0 - 1, old_z.1 + 1),
+        w: (old_w.0 - 1, old_w.1 + 1),
     }
 }
 
+#[cached]
+fn get_adjacent_cubes_4d((x, y, z, w): Coord) -> Vec<Coord> {
+    THREE_ADJACENTS
+        .iter()
+        .combinations_with_replacement(4)
+        .filter(|adj| *adj[0] != 0 || *adj[1] != 0 || *adj[2] != 0 || *adj[3] != 0)
+        .flat_map(|c| c.into_iter().permutations(4).collect_vec())
+        .unique()
+        .map(|adj| (x + *adj[0], y + *adj[1], z + *adj[2], w + *adj[3]))
+        .collect()
+}
+
 #[derive(Clone)]
-struct Data<T: GridFns + Clone> {
+struct Data {
     grid: Grid,
-    fns: T,
+    fns: GridFns,
 }
 
-impl<T: GridFns + Clone> Data<T> {
+impl Data {
     fn get_mutating_coords(&self) -> Dimensions {
         self.fns.get_mutating_coords(&self.grid)
     }
 
-    fn get_active_adjacent_count(&self, coord: &Coord) -> u32 {
+    fn get_active_adjacent_count(&self, coord: Coord) -> u32 {
         self.fns
             .get_adjacent_cubes(coord)
             .iter()
@@ -173,15 +166,22 @@ pub fn run() {
 
     let data_3d = Data {
         grid: grid.clone(),
-        fns: ThreeDimensionFns {},
+        fns: GridFns {
+            get_mutating_coords: Box::new(get_mutating_coords_3d),
+            get_adjacent_cubes: Box::new(get_adjacent_cubes_3d),
+        },
     };
 
     println!("Part 1: {}", six_rounds(data_3d));
 
     let data_4d = Data {
         grid,
-        fns: FourDimensionFns {},
+        fns: GridFns {
+            get_mutating_coords: Box::new(get_mutating_coords_4d),
+            get_adjacent_cubes: Box::new(get_adjacent_cubes_4d),
+        },
     };
+
     println!("Part 2: {}", six_rounds(data_4d));
 }
 
@@ -198,12 +198,12 @@ fn transform_input(input: &'static str) -> Grid {
         .collect()
 }
 
-fn six_rounds<T: GridFns + Clone>(mut data: Data<T>) -> u32 {
+fn six_rounds(mut data: Data) -> u32 {
     let mut old_data = data.clone();
 
     for _ in 0..6 {
         for coord in old_data.get_mutating_coords() {
-            let active_adjacent = old_data.get_active_adjacent_count(&coord);
+            let active_adjacent = old_data.get_active_adjacent_count(coord);
             let active = *old_data.grid.get(&coord).unwrap_or(&false);
 
             if active && !(active_adjacent == 2 || active_adjacent == 3) {

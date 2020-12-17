@@ -6,3 +6,4 @@ solutions for fun.
 Requires rust nightly (for day 6).
 
 Run `./compare.sh` to compare the outputs of the Rust and Python solutions.
+(Stopped writing Python solutions, so only up to a day 13.)

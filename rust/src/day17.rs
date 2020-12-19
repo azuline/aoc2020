@@ -5,6 +5,10 @@ use std::collections::HashMap;
 //
 // We're just doing dependency injection. 3D and 4D traits, wrapper class over the grid, differing
 // functions split up in implementations of the traits.
+//
+// TODO: Memoize the calculate neighboring coordinates function. It's a huge bottleneck. I tried
+// using `cached` but it didn't like the traits, blargh. Another attempt at Boxing the functions is
+// probably warranted.
 
 static INPUT: &str = include_str!("../../inputs/day17.txt");
 const THREE_ADJACENTS: [i32; 3] = [-1, 0, 1];
@@ -182,6 +186,7 @@ pub fn run() {
         grid,
         fns: FourDimensionFns {},
     };
+
     println!("Part 2: {}", six_rounds(data_4d));
 }
 

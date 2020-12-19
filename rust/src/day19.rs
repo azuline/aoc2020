@@ -1,6 +1,8 @@
 use itertools::Itertools;
 use std::collections::HashMap;
 
+// TODO: Use pest or nom or something to parse this in an actually maintainable way.
+
 static INPUT: &str = include_str!("../../inputs/day19.txt");
 
 #[derive(Debug, Clone)]

@@ -80,7 +80,6 @@ fn part2(masks_and_addrs: &[MaskAndAddrs]) -> u64 {
     for (mask, assignments) in masks_and_addrs.iter() {
         for (base_location, value) in assignments.iter() {
             let locations = generate_nondeterministic_locations(*base_location, &mask);
-            dbg!(&locations);
             for location in locations.iter() {
                 memory.insert(*location, *value);
             }

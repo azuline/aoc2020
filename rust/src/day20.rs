@@ -14,8 +14,14 @@ type TileBorder = Vec<bool>;
 // Tile Border -> ID of tiles that have it
 type TileBorders = HashMap<TileBorder, Vec<TileID>>;
 
-// Column of a grid row.
-type GridRow = Vec<bool>;
+// A tile on the final grid, can be rotated/flipped.
+struct GridTile {
+    tile_id: TileID,
+    rot_ccws: u8,
+    flip_y: bool,
+}
+// Column of a stitched together grid row.
+type StitchedGridRow = Vec<bool>;
 
 #[derive(Debug)]
 enum Direction {
@@ -120,7 +126,7 @@ fn get_tile_border(tile: &[TileRow], direction: &Direction) -> TileBorder {
 }
 
 fn part2(tiles: &Tiles, borders: &TileBorders) -> u64 {
-    let starting_corner = *get_corners(tiles, &borders).first().unwrap();
+    let starting_corner = get_starting_corner(tiles, &borders);
     let full_grid = build_full_grid(tiles, &borders, starting_corner);
     let num_true = count_true_in_grid(&full_grid);
 
@@ -135,37 +141,91 @@ fn part2(tiles: &Tiles, borders: &TileBorders) -> u64 {
     panic!("No loch-ness monsters found!");
 }
 
+/// The starting corner must be a "top left" corner. We take one of
+/// the corners and rotate it until it fits this criteria.
+fn get_starting_corner(tiles: &Tiles, borders: &TileBorders) -> GridTile {
+    let tile_id = *get_corners(tiles, &borders).first().unwrap();
+    let tile = tiles.get(&tile_id).unwrap();
+
+    let rot_ccws = (0..4)
+        .find(|rot| {
+            let rotated_tile = rotate_tile(tile.clone(), *rot);
+
+            vec![UP, LEFT].iter().all(|dir| {
+                let border = get_tile_border(&rotated_tile, dir);
+                borders.get(&border).unwrap().len() == 1
+            })
+        })
+        .unwrap();
+
+    GridTile {
+        tile_id,
+        rot_ccws,
+        flip_y: false,
+    }
+}
+
+/// Rotate the tile clockwise 90deg `rot` times.
+/// Each rotation is accomplished by transposing the columns and rows.
+fn rotate_tile(tile: Vec<TileRow>, rot: u8) -> Vec<TileRow> {
+    (0..rot).fold(tile, |tile, _| {
+        (0..tile.len())
+            .map(|row| (0..tile[0].len()).map(|col| tile[col][row]).collect_vec())
+            .collect_vec()
+    })
+}
+
 fn build_full_grid(
     tiles: &Tiles,
     borders: &TileBorders,
-    starting_corner: u64,
-) -> Vec<GridRow> {
-    let mut grid_blocks: Vec<Vec<Vec<TileRow>>> = Vec::new();
-    let grid_width_height = (tiles.len() as f64).sqrt() as u64;
+    starting_corner: GridTile,
+) -> Vec<StitchedGridRow> {
+    let grid_width_height = (tiles.len() as f64).sqrt() as usize;
+    let mut grid_tiles: Vec<Vec<GridTile>> = Vec::new();
 
     for row in 0..grid_width_height {
-        for col in 0..grid_width_height {
-            // do shit
+        let mut cur_tile = match row {
+            0 => starting_corner,
+            row => {
+                let above_tile = &grid_tiles[row - 1][0];
+                find_bordering_tile(tiles, borders, above_tile, DOWN)
+            }
+        };
+
+        grid_tiles[row].push(cur_tile);
+
+        for _ in 1..grid_width_height {
+            cur_tile = find_bordering_tile(tiles, borders, &cur_tile, RIGHT);
+            grid_tiles[row].push(cur_tile);
         }
     }
 
-    stitch_blocks(grid_blocks)
+    stitch_tiles(grid_tiles, tiles)
 }
 
-fn stitch_blocks(grid_blocks: Vec<Vec<Vec<TileRow>>>) -> Vec<GridRow> {
+fn find_bordering_tile(
+    tiles: &Tiles,
+    borders: &TileBorders,
+    tile_id: &GridTile,
+    direction: Direction,
+) -> GridTile {
+    0
+}
+
+fn stitch_tiles(grid_tiles: Vec<Vec<GridTile>>, tiles: &Tiles) -> Vec<StitchedGridRow> {
     vec![]
 }
 
-fn count_true_in_grid(grid: &[GridRow]) -> u64 {
+fn count_true_in_grid(grid: &[StitchedGridRow]) -> u64 {
     grid.iter()
         .map(|row| row.iter().filter(|c| **c).count() as u64)
         .sum()
 }
 
-fn generate_grid_rotations(grid: &[GridRow]) -> Vec<Vec<GridRow>> {
+fn generate_grid_rotations(grid: &[StitchedGridRow]) -> Vec<Vec<StitchedGridRow>> {
     vec![]
 }
 
-fn count_monsters(grid: &[GridRow]) -> u64 {
+fn count_monsters(grid: &[StitchedGridRow]) -> u64 {
     0
 }

@@ -1,7 +1,8 @@
 use itertools::Itertools;
 use std::collections::HashMap;
 
-// TODO: Use pest or nom or something to parse this in an actually maintainable way.
+// TODO: Use pest or nom or something to parse this in an actually
+// maintainable way.
 
 static INPUT: &str = include_str!("../../inputs/day19.txt");
 
@@ -61,7 +62,11 @@ fn part1(productions: &Productions, messages: &[&'static str]) -> usize {
         .count()
 }
 
-fn match_rule(productions: &Productions, rule: u32, input: &'static str) -> Vec<&'static str> {
+fn match_rule(
+    productions: &Productions,
+    rule: u32,
+    input: &'static str,
+) -> Vec<&'static str> {
     productions
         .get(&rule)
         .unwrap()
@@ -71,7 +76,9 @@ fn match_rule(productions: &Productions, rule: u32, input: &'static str) -> Vec<
                 acc.iter()
                     .filter_map(|x| match rhs {
                         Terminal(c) if x.chars().next()? == *c => Some(vec![&x[1..]]),
-                        Nonterminal(new_rule) => Some(match_rule(productions, *new_rule, x)),
+                        Nonterminal(new_rule) => {
+                            Some(match_rule(productions, *new_rule, x))
+                        }
                         _ => None,
                     })
                     .flatten()

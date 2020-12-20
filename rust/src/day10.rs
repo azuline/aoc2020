@@ -29,7 +29,11 @@ fn part1(numbers: &[u64]) -> usize {
 }
 
 fn part2(numbers: &[u64]) -> u64 {
-    fn calc_arrangements(numbers: &[u64], idx: usize, memo_table: &mut HashMap<usize, u64>) -> u64 {
+    fn calc_arrangements(
+        numbers: &[u64],
+        idx: usize,
+        memo_table: &mut HashMap<usize, u64>,
+    ) -> u64 {
         // Base case.
         if idx == numbers.len() - 2 {
             return 1;

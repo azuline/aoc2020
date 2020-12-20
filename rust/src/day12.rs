@@ -74,7 +74,8 @@ fn part2(actions: &[Action]) -> i32 {
             'L' => (ship, rotate_waypoint(waypoint, 'L', value), direction),
             'R' => (ship, rotate_waypoint(waypoint, 'R', value), direction),
             'F' => {
-                let new_ship = (ship.0 + waypoint.0 * value, ship.1 + waypoint.1 * value);
+                let new_ship =
+                    (ship.0 + waypoint.0 * value, ship.1 + waypoint.1 * value);
                 (new_ship, waypoint, direction)
             }
             d => (ship, move_coord(waypoint, d, value), direction),

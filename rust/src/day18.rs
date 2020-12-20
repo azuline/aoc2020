@@ -23,9 +23,10 @@ fn part1(data: &[&str]) -> u64 {
 
 /// Ok... so a little grammar for a recursive descent parser.
 ///
-/// So this is kind of crappy, but this parser is right-associative while the math should be
-/// left-associative. I'm a bit tired so I'm just gonna reverse the chars and flip the parens!
-/// Hahaha what a terrible hack!
+/// So this is kind of crappy, but this parser is right-associative
+/// while the math should be left-associative. I'm a bit tired so I'm
+/// just gonna reverse the chars and flip the parens! Hahaha what a
+/// terrible hack!
 ///
 /// math = add | mult | expr
 /// add = expr "+" math
@@ -40,7 +41,8 @@ pub fn parse(line: &str) -> Math {
 fn parse_math(chars: &[char], idx: usize) -> Option<(Math, usize)> {
     let (left, idx) = parse_expr(chars, idx)?;
 
-    // If we match operator, then this is add/mult. Otherwise, it's just integer expr.
+    // If we match operator, then this is add/mult. Otherwise, it's just
+    // integer expr.
     if let Some((oper, idx)) = match_char(chars, idx, &['+', '*']) {
         let (right, idx) = parse_math(chars, idx)?;
         Some((Math::Expr(Box::new(left), oper, Box::new(right)), idx))

@@ -72,7 +72,8 @@ fn part2<'a>(passports: &'a [Passport], validators: &[Validator<'a>]) -> usize {
         .iter()
         .filter(|&passport| {
             validators.iter().all(|(key, validator)| {
-                passport.contains_key(key) && Ok(true) == validator(&passport.get(key).unwrap())
+                passport.contains_key(key)
+                    && Ok(true) == validator(&passport.get(key).unwrap())
             })
         })
         .count()

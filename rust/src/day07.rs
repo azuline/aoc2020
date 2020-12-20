@@ -3,8 +3,9 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::{HashMap, HashSet, VecDeque};
 
-// TODO: Figure out a way without cloning all these strings? And figure out all the weird
-// ownership/borrowing shit with slices and strings and crap.
+// TODO: Figure out a way without cloning all these strings? And
+// figure out all the weird ownership/borrowing shit with slices and
+// strings and crap.
 
 static INPUT: &str = include_str!("../../inputs/day07.txt");
 
@@ -29,7 +30,8 @@ fn transform_input(input: &str) -> (BagMap, BagMapWithCount) {
     let mut to_containing: BagMapWithCount = HashMap::new();
 
     for rule in input.lines() {
-        let (from_bag, to_bags) = rule.splitn(2, " bags contain ").next_tuple().unwrap();
+        let (from_bag, to_bags) =
+            rule.splitn(2, " bags contain ").next_tuple().unwrap();
 
         for cap in BAG_AMOUNT_REGEX.captures_iter(to_bags) {
             let num_bags: u32 = cap[1].parse().unwrap();

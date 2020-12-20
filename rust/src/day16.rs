@@ -7,7 +7,8 @@ use std::ops::Range;
 static INPUT: &str = include_str!("../../inputs/day16.txt");
 
 lazy_static! {
-    static ref FIELD_REGEX: Regex = Regex::new(r"([^:]+): (\d+)-(\d+) or (\d+)-(\d+)").unwrap();
+    static ref FIELD_REGEX: Regex =
+        Regex::new(r"([^:]+): (\d+)-(\d+) or (\d+)-(\d+)").unwrap();
 }
 
 type Fields = HashMap<String, Vec<Range<u64>>>;
@@ -84,7 +85,8 @@ fn part1(data: &Data) -> u64 {
         .sum()
 }
 
-/// Going to go for the greedy-matching solution. If it doesn't work for all inputs, so be it!
+/// Going to go for the greedy-matching solution. If it doesn't work
+/// for all inputs, so be it!
 fn part2(data: &Data) -> u64 {
     let field_values = get_field_values(&data.nearby_tickets, &data.fields);
 

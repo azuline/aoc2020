@@ -11,9 +11,9 @@ pub fn run() {
     println!("Part 2: {}", part2(&mut seat_ids));
 }
 
-/// Convert each line in the input into a seat ID. We replace each letter with its
-/// corresponding bit, and from that we calculate the seat ID.
-///
+/// Convert each line in the input into a seat ID. We replace each
+/// letter with its corresponding bit, and from that we calculate the
+/// seat ID.
 fn transform_input(input: &str) -> Vec<SeatID> {
     input
         .lines()

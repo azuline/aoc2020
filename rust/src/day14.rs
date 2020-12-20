@@ -92,31 +92,31 @@ fn part2(masks_and_addrs: &[MaskAndAddrs]) -> u64 {
 fn generate_nondeterministic_locations(location: u64, mask: &str) -> Vec<u64> {
     let location_bits: Vec<char> = format!("{:036b}", location).chars().collect();
 
-    let locations: Vec<String> =
-        mask.chars()
-            .enumerate()
-            .fold(vec![String::from("")], |locs: Vec<String>, (idx, c)| {
-                let next_chars: Vec<char> = match c {
-                    '0' => vec![location_bits[idx]],
-                    '1' => vec!['1'],
-                    'X' => vec!['0', '1'],
-                    _ => panic!("I WANT TO SLEEP."),
-                };
+    let locations: Vec<String> = mask.chars().enumerate().fold(
+        vec![String::from("")],
+        |locs: Vec<String>, (idx, c)| {
+            let next_chars: Vec<char> = match c {
+                '0' => vec![location_bits[idx]],
+                '1' => vec!['1'],
+                'X' => vec!['0', '1'],
+                _ => panic!("I WANT TO SLEEP."),
+            };
 
-                let mut new_locs = Vec::new();
+            let mut new_locs = Vec::new();
 
-                for s in locs.into_iter() {
-                    // TO be quite frank, this is an atrocity, but it's been an hour and I want to
-                    // sleep.
-                    for c in next_chars.iter() {
-                        let mut new_str = s.clone();
-                        new_str.push(*c);
-                        new_locs.push(new_str);
-                    }
+            for s in locs.into_iter() {
+                // TO be quite frank, this is an atrocity, but it's been an hour and I
+                // want to sleep.
+                for c in next_chars.iter() {
+                    let mut new_str = s.clone();
+                    new_str.push(*c);
+                    new_locs.push(new_str);
                 }
+            }
 
-                new_locs
-            });
+            new_locs
+        },
+    );
 
     locations
         .iter()

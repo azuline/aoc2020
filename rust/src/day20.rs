@@ -15,6 +15,7 @@ type TileBorder = Vec<bool>;
 type TileBorders = HashMap<TileBorder, Vec<TileID>>;
 
 // A tile on the final grid, can be rotated/flipped.
+#[derive(Clone, Copy, Debug)]
 struct GridTile {
     tile_id: TileID,
     rot_ccws: u8,
@@ -165,7 +166,7 @@ fn get_starting_corner(tiles: &Tiles, borders: &TileBorders) -> GridTile {
     }
 }
 
-/// Rotate the tile clockwise 90deg `rot` times.
+/// Rotate the tile counterclockwise 90deg `rot` times.
 /// Each rotation is accomplished by transposing the columns and rows.
 fn rotate_tile(tile: Vec<TileRow>, rot: u8) -> Vec<TileRow> {
     (0..rot).fold(tile, |tile, _| {
@@ -209,7 +210,11 @@ fn find_bordering_tile(
     tile_id: &GridTile,
     direction: Direction,
 ) -> GridTile {
-    0
+    GridTile {
+        tile_id: 0,
+        rot_ccws: 0,
+        flip_y: false,
+    }
 }
 
 fn stitch_tiles(grid_tiles: Vec<Vec<GridTile>>, tiles: &Tiles) -> Vec<StitchedGridRow> {

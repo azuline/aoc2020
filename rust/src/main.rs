@@ -1,4 +1,6 @@
 #![feature(iterator_fold_self)]
+#![feature(str_split_once)]
+#![feature(map_into_keys_values)]
 
 use std::env;
 
@@ -22,6 +24,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -52,6 +55,7 @@ fn main() {
         Ok(18) => day18::run(),
         Ok(19) => day19::run(),
         Ok(20) => day20::run(),
+        Ok(21) => day21::run(),
         _ => {
             println!("Invalid day~");
         }

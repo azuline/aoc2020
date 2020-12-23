@@ -1,9 +1,13 @@
 use itertools::Itertools;
-use std::collections::VecDeque;
 
 static INPUT: &str = include_str!("../../inputs/day23.txt");
 
-type Cups = VecDeque<u64>;
+type Cup = usize;
+
+// We solve this with a "cons vec/map"--represented as a vector where
+// each index contains the value of the next index in the list.
+//
+// We can do this because the cups are all on the interval [1, n].
 
 pub fn run() {
     let cups = transform_input(INPUT);
@@ -12,82 +16,85 @@ pub fn run() {
     println!("Part 2: {}", part2(&cups));
 }
 
-fn transform_input(input: &'static str) -> Cups {
+fn transform_input(input: &'static str) -> Vec<Cup> {
     input
         .trim_end()
         .chars()
-        .map(|x| x.to_digit(10).unwrap() as u64)
+        .map(|x| x.to_digit(10).unwrap() as usize)
         .collect()
 }
 
-fn part1(cups: &Cups) -> String {
-    let mut cups = cups.clone();
-    play_cups_game(&mut cups, 100);
-    cups.iter().skip(1).map(|x| x.to_string()).join("")
+fn part1(cups: &[Cup]) -> String {
+    let mut cons_vec = create_cons_vec(cups);
+    play_cups_game(&mut cons_vec, *cups.first().unwrap(), 100);
+    get_cups_after_1(&cons_vec)
 }
 
-fn play_cups_game(cups: &mut Cups, moves: usize) {
-    // Mutable temporary storage array for picked up cups.
-    let mut picked_up: [u64; 3] = [0, 0, 0];
+fn create_cons_vec(cups: &[Cup]) -> Vec<Cup> {
+    let mut cons_vec: Vec<Cup> = Vec::new();
+    cons_vec.resize(cups.len() + 1, 0);
 
-    let max_cup = *cups.iter().max().unwrap();
-    let min_cup = *cups.iter().min().unwrap();
+    for idx in 0..cups.len() {
+        cons_vec[cups[idx] as usize] = cups[(idx + 1) % cups.len()];
+    }
 
-    for i in 0..moves {
-        if i % 100 == 0 {
-            dbg!(format!("ON MOVE {}", i));
+    cons_vec
+}
+
+fn play_cups_game(cons_vec: &mut [Cup], first_cup: Cup, moves: usize) {
+    let mut cur_cup = first_cup;
+
+    for _ in 0..moves {
+        let pickup_1 = cons_vec[cur_cup];
+        let pickup_2 = cons_vec[pickup_1];
+        let pickup_3 = cons_vec[pickup_2];
+
+        // Calculate destination cup.
+        let mut dest_cup = cur_cup - 1;
+        while vec![pickup_1, pickup_2, pickup_3].contains(&dest_cup) || dest_cup < 1 {
+            if dest_cup <= 1 {
+                dest_cup = cons_vec.len() - 1;
+            } else {
+                dest_cup -= 1;
+            }
         }
 
-        let cur_cup = cups[0];
+        let after_pickup = cons_vec[pickup_3];
+        let after_dest = cons_vec[dest_cup];
+        cons_vec[cur_cup] = after_pickup;
+        cons_vec[dest_cup] = pickup_1;
+        cons_vec[pickup_3] = after_dest;
 
-        picked_up[0] = cups.remove(1).unwrap();
-        picked_up[1] = cups.remove(1).unwrap();
-        picked_up[2] = cups.remove(1).unwrap();
-
-        let dest_idx = find_dest_cup_idx(&cups, &picked_up, cur_cup, min_cup, max_cup);
-
-        cups.insert(dest_idx + 1, picked_up[0]);
-        cups.insert(dest_idx + 2, picked_up[1]);
-        cups.insert(dest_idx + 3, picked_up[2]);
-
-        cups.rotate_left(1);
-    }
-
-    while cups[0] != 1 {
-        cups.rotate_left(1);
+        cur_cup = after_pickup;
     }
 }
 
-fn find_dest_cup_idx(
-    cups: &Cups,
-    picked_up: &[u64],
-    cur_cup: u64,
-    min_cup: u64,
-    max_cup: u64,
-) -> usize {
-    let mut dest_cup = cur_cup - 1;
+fn get_cups_after_1(cons_vec: &[Cup]) -> String {
+    let mut cups: Vec<Cup> = Vec::new();
+    cups.reserve(cons_vec.len() - 1);
 
-    while picked_up.contains(&dest_cup) || dest_cup < min_cup {
-        if dest_cup < min_cup {
-            dest_cup = max_cup;
-        } else {
-            dest_cup -= 1;
-        }
+    let mut next = cons_vec[1];
+    while next != 1 {
+        cups.push(next);
+        next = cons_vec[next];
     }
 
-    cups.iter().position(|&x| x == dest_cup).unwrap()
+    cups.iter().map(|x| x.to_string()).join("")
 }
 
-fn part2(cups: &Cups) -> u64 {
-    let mut cups = cups.clone();
+fn part2(cups: &[Cup]) -> usize {
+    let mut cups = cups.to_owned();
 
     // Create the new million-element cups list.
     let max_cup = *cups.iter().max().unwrap();
     for cup in (max_cup + 1)..1_000_001 {
-        cups.push_back(cup);
+        cups.push(cup);
     }
 
-    play_cups_game(&mut cups, 10_000_000);
+    let mut cons_vec = create_cons_vec(&cups);
+    play_cups_game(&mut cons_vec, *cups.first().unwrap(), 10_000_000);
 
-    cups[1] * cups[2]
+    let first_cup = cons_vec[1];
+    let second_cup = cons_vec[first_cup as usize];
+    first_cup * second_cup
 }

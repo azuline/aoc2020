@@ -4,10 +4,13 @@ static INPUT: &str = include_str!("../../inputs/day23.txt");
 
 type Cup = usize;
 
-// We solve this with a "cons vec/map"--represented as a vector where
-// each index contains the value of the next index in the list.
+// We solve this with a "cons vec/map"--a vector where
+// each index `i` represents cup `i` and contains the value of the
+// next cup in the circle.
 //
 // We can do this because the cups are all on the interval [1, n].
+//
+// With this configuration, each round runs in constant time.
 
 pub fn run() {
     let cups = transform_input(INPUT);

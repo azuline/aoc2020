@@ -1,7 +1,7 @@
 use cached::proc_macro::cached;
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 static INPUT: &str = include_str!("../../inputs/day24.txt");
 
@@ -21,8 +21,8 @@ use Instruction::*;
 
 type Instructions = Vec<Instruction>;
 type Coord = (i32, i32, i32);
-// Representing white as false and black as true.
-type Grid = HashMap<Coord, bool>;
+// A collection of black coordinates.
+type GridBlacks = HashSet<Coord>;
 
 lazy_static! {
     static ref OFFSETS: HashMap<Instruction, Coord> = {
@@ -80,41 +80,40 @@ fn parse_line(line: &'static str) -> Instructions {
 }
 
 fn part1(instructions_list: &[Instructions]) -> usize {
-    count_black(make_initial_grid(instructions_list))
+    make_initial_grid(instructions_list).len()
 }
 
-fn make_initial_grid(instructions_list: &[Instructions]) -> Grid {
-    let mut grid: Grid = HashMap::new();
+fn make_initial_grid(instructions_list: &[Instructions]) -> GridBlacks {
+    let mut blacks: GridBlacks = HashSet::new();
 
     for instructions in instructions_list {
         let coord = instructions.iter().fold((0, 0, 0), |coord, inst| {
             add_coords(&coord, OFFSETS.get(&inst).unwrap())
         });
 
-        let black = *grid.get(&coord).unwrap_or(&false);
-        grid.insert(coord, !black);
+        if blacks.contains(&coord) {
+            blacks.remove(&coord);
+        } else {
+            blacks.insert(coord);
+        }
     }
 
-    grid
+    blacks
 }
 
 fn add_coords((x, y, z): &Coord, (dx, dy, dz): &Coord) -> Coord {
     (x + dx, y + dy, z + dz)
 }
 
-fn count_black(grid: Grid) -> usize {
-    grid.into_values().filter(|&x| x).count()
-}
-
 fn part2(instructions_list: &[Instructions]) -> usize {
-    let mut grid = make_initial_grid(instructions_list);
+    let mut blacks = make_initial_grid(instructions_list);
 
     for _day in 1..101 {
-        let to_flip: Vec<Coord> = get_affected_coords(&grid)
+        let to_flip: Vec<Coord> = get_affected_coords(&blacks)
             .into_iter()
             .filter(|&coord| {
-                let black = *grid.get(&coord).unwrap_or(&false);
-                let num_adj_blacks = get_adj_blacks(&grid, coord);
+                let black = blacks.contains(&coord);
+                let num_adj_blacks = get_adj_blacks(&blacks, coord);
 
                 if black {
                     num_adj_blacks == 0 || num_adj_blacks > 2
@@ -125,8 +124,11 @@ fn part2(instructions_list: &[Instructions]) -> usize {
             .collect();
 
         for coord in to_flip {
-            let black = *grid.get(&coord).unwrap_or(&false);
-            grid.insert(coord, !black);
+            if blacks.contains(&coord) {
+                blacks.remove(&coord);
+            } else {
+                blacks.insert(coord);
+            }
         }
 
         // if _day < 10 || _day % 10 == 0 {
@@ -135,12 +137,12 @@ fn part2(instructions_list: &[Instructions]) -> usize {
         // }
     }
 
-    count_black(grid)
+    blacks.len()
 }
 
 // This is inefficiently implemented, but who cares!
-fn get_affected_coords(grid: &Grid) -> Vec<Coord> {
-    grid.keys()
+fn get_affected_coords(grid: &GridBlacks) -> Vec<Coord> {
+    grid.iter()
         .flat_map(|&c| {
             let mut coords = get_neighbors_of(c);
             coords.push(c);
@@ -150,10 +152,10 @@ fn get_affected_coords(grid: &Grid) -> Vec<Coord> {
         .collect()
 }
 
-fn get_adj_blacks(grid: &Grid, coord: Coord) -> usize {
+fn get_adj_blacks(grid: &GridBlacks, coord: Coord) -> usize {
     get_neighbors_of(coord)
         .iter()
-        .filter(|neighbor| *grid.get(&neighbor).unwrap_or(&false))
+        .filter(|neighbor| grid.contains(&neighbor))
         .count()
 }
 
@@ -180,10 +182,7 @@ mod tests {
 
     #[test]
     fn getting_adj_blacks() {
-        let grid: Grid = [((1, -1, 0), true), ((0, -1, 1), true)]
-            .iter()
-            .cloned()
-            .collect();
+        let grid: GridBlacks = [(1, -1, 0), (0, -1, 1)].iter().cloned().collect();
 
         assert_eq!(get_adj_blacks(&grid, (0, 0, 0)), 2);
         assert_eq!(get_adj_blacks(&grid, (1, -2, 1)), 2);
@@ -192,7 +191,7 @@ mod tests {
 
     #[test]
     fn getting_affected_coords() {
-        let grid: Grid = [((0, 0, 0), false)].iter().cloned().collect();
+        let grid: GridBlacks = [(0, 0, 0)].iter().cloned().collect();
 
         assert!(get_affected_coords(&grid).contains(&(0, 0, 0)));
     }

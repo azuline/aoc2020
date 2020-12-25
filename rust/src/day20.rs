@@ -98,7 +98,7 @@ fn part1(tiles: &Tiles, borders: &TileBorders) -> u64 {
 }
 
 fn get_corners(tiles: &Tiles, borders: &TileBorders) -> Vec<TileID> {
-    tiles
+    let corners: Vec<TileID> = tiles
         .iter()
         .filter(|(_, tile)| {
             let unmatched_edge_count = get_all_tile_borders(tile)
@@ -111,7 +111,10 @@ fn get_corners(tiles: &Tiles, borders: &TileBorders) -> Vec<TileID> {
             unmatched_edge_count == 4
         })
         .map(|(id, _)| *id)
-        .collect()
+        .collect();
+
+    assert_eq!(corners.len(), 4);
+    corners
 }
 
 fn map_borders(tiles: &Tiles) -> TileBorders {
@@ -365,25 +368,23 @@ fn count_monsters(grid: &[StitchedGridRow]) -> usize {
         .flat_map(|(row_idx, row)| {
             row.iter()
                 .enumerate()
-                .map(|(col_idx, _)| {
-                    // WHERE ARE THE MONADS???
-                    MONSTER_OFFSETS.iter().all(|(dy, dx)| {
-                        if let Some(grid_row) = grid.get((row_idx as i32 + dx) as usize)
-                        {
-                            if let Some(grid_val) =
-                                grid_row.get((col_idx as i32 + dy) as usize)
-                            {
-                                return *grid_val;
-                            }
-                        }
-
-                        false
-                    })
-                })
+                .map(|(col_idx, _)| does_monster_exist_at(grid, (row_idx, col_idx)))
                 .collect_vec()
         })
         .filter(|x| *x)
         .count()
+}
+
+fn does_monster_exist_at(grid: &[StitchedGridRow], (row, col): (usize, usize)) -> bool {
+    MONSTER_OFFSETS.iter().all(|(dy, dx)| {
+        if let Some(grid_row) = grid.get((row as i32 + dx) as usize) {
+            if let Some(grid_val) = grid_row.get((col as i32 + dy) as usize) {
+                return *grid_val;
+            }
+        }
+
+        false
+    })
 }
 
 fn _print_tile(tile: &[TileRow]) {

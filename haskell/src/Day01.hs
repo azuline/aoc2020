@@ -1,43 +1,39 @@
-{-# LANGUAGE TupleSections #-}
-
 module Day01 where
 
-import Data.Set (Set)
-import qualified Data.Set as Set
+import Control.Monad.State
+import qualified Data.Set as S
 import qualified System.IO as IO
 
-type Product = Int
-
-type Complements = Set Int
-
-type Combinations = [(Int, Int)]
+type Product     = Int
+type Complements = S.Set Int
+type Combination = (Int, Int)
 
 main :: IO ()
 main = do
-  input <- IO.readFile "../inputs/day01.txt"
-  let numbers = [read word | word <- lines input]
-      complements = Set.fromList . map (2020 -) $ numbers
+  numbers <- map read . lines <$> IO.readFile "../inputs/day01.txt"
 
   putStrLn $ "Part 1: " ++ show (part1 numbers)
   putStrLn $ "Part 2: " ++ show (part2 numbers)
 
 part1 :: [Int] -> Product
-part1 numbers = findPair numbers Set.empty
-
-findPair :: [Int] -> Complements -> Product
-findPair (x : xs) complements
-  | x `Set.member` complements = x * (2020 - x)
-  | otherwise = findPair xs $ Set.insert (2020 - x) complements
+part1 xs = e * (2020 - e)
+  where
+    e = head $ evalState (filterM go xs) S.empty
+    go :: Int -> State Complements Bool
+    go x =
+      do seen <- get
+         put  $ x `S.insert` seen
+         pure $ (2020 - x) `S.member` seen
 
 part2 :: [Int] -> Product
-part2 numbers = findTriplet combinations Set.empty
+part2 xs = e1 * e2 * (2020 - e1 - e2)
   where
-    combinations = generateCombinations numbers
+    (e1, e2) = head $ evalState (filterM go $ pairs xs) S.empty
+    go :: Combination -> State Complements Bool
+    go (x, y) =
+      do seen <- get
+         put  $ (x + y) `S.insert` seen
+         pure $ (2020 - x - y) `S.member` seen
 
-findTriplet :: Combinations -> Complements -> Product
-findTriplet ((x, y) : xs) complements
-  | (x + y) `Set.member` complements = x * y * (2020 - x - y)
-  | otherwise = findTriplet xs $ Set.insert (2020 - x - y) complements
-
-generateCombinations :: [Int] -> Combinations
-generateCombinations (x : xs) = map (,x) xs ++ generateCombinations xs
+pairs :: [Int] -> [Combination]
+pairs xs = [ (x, y) | x <- xs, y <- xs ]

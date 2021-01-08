@@ -1,4 +1,10 @@
 cradle:
   cabal:
-    - path: "src"
-      component: "lib:aoc2020"
+    - path: "src/Main.hs"
+      component: "aoc2020:exe:aoc2020"
+
+    - path: "src/Day01.hs"
+      component: "aoc2020:exe:aoc2020"
+
+    - path: "src/Day02.hs"
+      component: "aoc2020:exe:aoc2020"

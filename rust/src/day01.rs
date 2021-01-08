@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use std::collections::HashSet;
 
 static INPUT: &str = include_str!("../../inputs/day01.txt");
@@ -15,28 +14,28 @@ fn transform_input(input: &str) -> Vec<i32> {
 }
 
 fn part1(numbers: &[i32]) -> i32 {
+    find_two_sum(numbers, 2020).unwrap()
+}
+
+fn find_two_sum(numbers: &[i32], target: i32) -> Option<i32> {
     let mut complements: HashSet<i32> = HashSet::new();
 
     for x in numbers.iter() {
         if complements.contains(x) {
-            return x * (2020 - x);
+            return Some(x * (target - x));
         }
 
-        complements.insert(2020 - x);
+        complements.insert(target - x);
     }
 
-    panic!("No pair found.")
+    None
 }
 
 fn part2(numbers: &[i32]) -> i32 {
-    let mut complements: HashSet<i32> = HashSet::new();
-
-    for (x, y) in numbers.iter().tuple_combinations() {
-        if complements.contains(&(x + y)) {
-            return x * y * (2020 - x - y);
+    for x in numbers.iter() {
+        if let Some(yz) = find_two_sum(numbers, 2020 - x) {
+            return x * yz;
         }
-
-        complements.insert(2020 - x - y);
     }
 
     panic!("No triplet found.");
